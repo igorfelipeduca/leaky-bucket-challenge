@@ -1,15 +1,13 @@
-# Elysia with Bun runtime
+# Leaky Bucket Challenge
 
-## Getting Started
-To get started with this template, simply paste this command into your terminal:
-```bash
-bun create elysia ./elysia-example
-```
+A Node.js API implementing a leaky bucket rate limiting strategy for PIX key queries, inspired by BACEN's rate limiting system.
 
-## Development
-To start the development server run:
-```bash
-bun run dev
-```
+The API features:
+- Multi-tenant token bucket system where each user gets 10 tokens
+- Token replenishment of 1 token per hour, up to max 10 tokens
+- JWT authentication with bearer tokens
+- Token consumption on each request - failed requests decrease token count
+- Company and user management with token policies
+- Built with Elysia.js, Prisma ORM and PostgreSQL
 
-Open http://localhost:3000/ with your browser to see the result.
+The system implements core rate limiting concepts from BACEN's PIX DICT API specification.
