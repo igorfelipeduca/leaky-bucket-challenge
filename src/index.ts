@@ -60,6 +60,25 @@ app.use(
         return;
 
       // TODO: iterate through the users and token policies and generate the missing tokens
+      for (const company of companies) {
+        for (const user of company.users) {
+          const policy = company.tokenPolicy;
+          const tokensToAdd = (policy?.maxTokens ?? 10) - user.tokens.length;
+
+          if (!Boolean(tokensToAdd)) return;
+
+          for (let i = 0; i < tokensToAdd; i++) {
+            await db.token.create({
+              data: {
+                userId: user.id,
+                companyId: company.id,
+              },
+            });
+          }
+
+          console.log(`Created ${tokensToAdd} for user ${user.email}`);
+        }
+      }
     },
   })
 );
@@ -274,5 +293,29 @@ app.post(
   },
   {
     body: createTokenPolicyDto,
+  }
+);
+
+app.delete(
+  "/token-policy/:id",
+  async ({ params, error }) => {
+    const tokenPolicy = await db.tokenPolicy.findUnique({
+      where: { id: Number(params.id) },
+    });
+
+    if (!tokenPolicy) {
+      return error(404, "Token policy not found");
+    }
+
+    await db.tokenPolicy.delete({
+      where: { id: Number(params.id) },
+    });
+
+    return { success: true };
+  },
+  {
+    params: t.Object({
+      id: t.String(),
+    }),
   }
 );
